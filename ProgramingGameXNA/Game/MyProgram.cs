@@ -12,13 +12,17 @@ namespace ProgramingGameXNA.Game
         private List<CodeStatement> codeList = new List<CodeStatement>();
         public MyProgram()
         {
+            this.IsHUD = true;
         }
 
         public void Add(CodeStatement code)
         {
-            this.codeList.Add(code);
-            code.Position = position + new Vector2(10, 10);
+            var x = codeList.Count * (128 + 10) + 10;
+            var y = 10;
+            code.Position = position + new Vector2(x, y);
             code.IsHUD = true;
+
+            this.codeList.Add(code);
         }
 
         public override void Update(GameTime gameTime)
@@ -26,7 +30,7 @@ namespace ProgramingGameXNA.Game
             for (int i = 0; i < codeList.Count; i++)
             {
                 var code = codeList[i];
-                code.Execute();
+             //   code.Execute();
             }
 
             base.Update(gameTime);
@@ -37,6 +41,7 @@ namespace ProgramingGameXNA.Game
             var size = new Vector2(0, 100);
             size.X = codeList.Count * (128 + 10) + 10;
 
+            graphics.FillRect2D(position, size, Color.Beige);
             graphics.DrawRect2D(position, size, Color.MediumSeaGreen);
         }
     }

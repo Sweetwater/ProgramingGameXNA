@@ -17,5 +17,9 @@ namespace ProgramingGameXNA.Game
             get { return "Player"; }
         }
         public MyProgram MyProperty { get; set; }
+
+        public Player()
+        {
+        }
     }
 }

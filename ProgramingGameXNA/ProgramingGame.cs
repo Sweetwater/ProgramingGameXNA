@@ -107,17 +107,9 @@ namespace ProgramingGameXNA
             Field = new Field();
             this.Components.Add(Field);
 
-            Player = new Player();
-            Player.Position = new Vector2(320, 240);
-            this.Components.Add(Player);
-
             MyProgram = new MyProgram();
             MyProgram.Position = new Vector2(10, 20);
             this.Components.Add(MyProgram);
-
-            var left = new CodeEventTrigger(CodeEventTrigger.EventType.RightKey);
-            left.Position = GetRandomPosition();
-            this.Components.Add(left);
 
             var posY = new CodePosition(CodePosition.PositionType.Y);
             var sp5 = new CodeSpeed(CodeSpeed.SpeedType.Speed05);
@@ -134,13 +126,65 @@ namespace ProgramingGameXNA
             this.Components.Add(sp5);
             this.Components.Add(sub);
 
+            var posX = new CodePosition(CodePosition.PositionType.X);
+            var sp5_2 = new CodeSpeed(CodeSpeed.SpeedType.Speed05);
+            var add = new CodeCAO(CodeCAO.CAOType.Add);
+            add.Left = posX;
+            add.Right = sp5_2;
+            var rightKey = new CodeEventTrigger(CodeEventTrigger.EventType.RightKey);
+            rightKey.Next = add;
+
+            MyProgram.Add(rightKey);
+
+            this.Components.Add(rightKey);
+            this.Components.Add(posX);
+            this.Components.Add(sp5_2);
+            this.Components.Add(add);
+
+            this.FieldCodeList = new List<GameObject>();
+
+            Player = new Player();
+            Player.Position = new Vector2(320, 240);
+            this.Components.Add(Player);
+            this.FieldCodeList.Add(Player);
+
+            var factoryTable = new Dictionary<int, Func<GameObject>>();
+            factoryTable[0] = () => new CodeEventTrigger(CodeEventTrigger.EventType.LeftKey); 
+            factoryTable[1] = () => new CodeEventTrigger(CodeEventTrigger.EventType.RightKey); 
+            factoryTable[2] = () => new CodeEventTrigger(CodeEventTrigger.EventType.UpKey); 
+            factoryTable[3] = () => new CodeEventTrigger(CodeEventTrigger.EventType.DownKey); 
+
+            factoryTable[4] = () => new CodeCAO(CodeCAO.CAOType.Add); 
+            factoryTable[5] = () => new CodeCAO(CodeCAO.CAOType.Sub); 
+
+            factoryTable[6] = () => new CodePosition(CodePosition.PositionType.X);
+            factoryTable[7] = () => new CodePosition(CodePosition.PositionType.Y);
+
+            factoryTable[8] = () => new CodeSpeed(CodeSpeed.SpeedType.Speed01);
+            factoryTable[9] = () => new CodeSpeed(CodeSpeed.SpeedType.Speed05);
+            factoryTable[10] = () => new CodeSpeed(CodeSpeed.SpeedType.Speed10);
+
+            for (int i = 0; i < 20; i++)
+            {
+                int type = random.Next(factoryTable.Count);
+                var code = factoryTable[type]();
+                code.Position = GetRandomPosition();
+                this.FieldCodeList.Add(code);
+                this.Components.Add(code);
+            }
+
             CollisionManager = new CollisionManager();
             CollisionManager.Field = Field;
             CollisionManager.Player = Player;
+            CollisionManager.FieldObjectList = FieldCodeList;
             this.Components.Add(CollisionManager);
 
-
             GameObject.Setup(this);
+
+            for (int i = 0; i < Components.Count; i++)
+			{
+			    Components[i].Initialize();
+			}
         }
 
         private Vector2 GetRandomPosition()
@@ -206,11 +250,13 @@ namespace ProgramingGameXNA
 //            myCode.Execute();
 
 
-            //var speed = 2;
-            //if (keyboardState.IsKeyDown(Keys.Left)) playerPosition.X -= speed;
-            //if (keyboardState.IsKeyDown(Keys.Right)) playerPosition.X += speed;
-            //if (keyboardState.IsKeyDown(Keys.Up)) playerPosition.Y -= speed;
-            //if (keyboardState.IsKeyDown(Keys.Down)) playerPosition.Y += speed;
+            var speed = 2;
+            var position = Player.Position;
+            if (keyboardState.IsKeyDown(Keys.Left)) position.X -= speed;
+            if (keyboardState.IsKeyDown(Keys.Right)) position.X += speed;
+            if (keyboardState.IsKeyDown(Keys.Up)) position.Y -= speed;
+            if (keyboardState.IsKeyDown(Keys.Down)) position.Y += speed;
+            Player.Position = position;
 
             base.Update(gameTime);
         }
