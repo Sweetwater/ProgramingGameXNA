@@ -60,7 +60,7 @@ namespace ProgramingGameXNA.Game
         }
         public virtual Texture2D Image
         {
-            get { return imageTable[ImageName]; }
+            get { return imageTable == null ? null : imageTable[ImageName]; }
         }
 
         public Rectangle ImageRect {
@@ -119,7 +119,8 @@ namespace ProgramingGameXNA.Game
 
             if (IsHUD)
             {
-                graphics.DrawTexture(Image, Position, ImageRect, Color.White);
+                var drawPosition = Position - new Vector2(ImageRect.Width/2, ImageRect.Height/2);
+                graphics.DrawTexture(Image, drawPosition, ImageRect, Color.White);
             }
             else
             {
@@ -145,6 +146,11 @@ namespace ProgramingGameXNA.Game
             pos = pos - camera.position + camera.Origin;
             graphics.DrawRect2D(pos, size, color);
             return box;
+        }
+
+        public virtual bool IsCollisionTarget(GameObject target)
+        {
+            return true;
         }
     }
 }

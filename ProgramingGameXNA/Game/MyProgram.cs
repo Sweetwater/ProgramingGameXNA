@@ -17,8 +17,8 @@ namespace ProgramingGameXNA.Game
 
         public void Add(CodeStatement code)
         {
-            var x = codeList.Count * (128 + 10) + 10;
-            var y = 10;
+            var x = codeList.Count * (128 + 10) + 10 + 64;
+            var y = 10 + 16;
             code.Position = position + new Vector2(x, y);
             code.IsHUD = true;
 
@@ -30,7 +30,7 @@ namespace ProgramingGameXNA.Game
             for (int i = 0; i < codeList.Count; i++)
             {
                 var code = codeList[i];
-             //   code.Execute();
+                code.Execute();
             }
 
             base.Update(gameTime);

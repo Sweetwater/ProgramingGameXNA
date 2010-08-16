@@ -14,6 +14,23 @@ namespace ProgramingGameXNA.Game
             get { return value; }
             set { this.value = value; }
         }
+
+        protected CodeStatement parent = CodeStatement.Nop;
+        public CodeStatement Parent {
+            get { return parent; }
+            set { parent = value; }
+        }
+
+        public override bool IsCollisionTarget(GameObject target)
+        {
+            if (target == Parent)
+            {
+                return false;
+            }
+            return base.IsCollisionTarget(target);
+        }
+
+
     }
 
     public class CodePosition : CodeVariable

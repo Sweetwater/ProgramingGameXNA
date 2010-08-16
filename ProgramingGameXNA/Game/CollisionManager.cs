@@ -59,6 +59,8 @@ namespace ProgramingGameXNA.Game
             for (int i = 0; i < FieldObjectList.Count; i++)
             {
                 if (object1 == FieldObjectList[i]) continue;
+                if (object1.IsCollisionTarget(FieldObjectList[i]) == false) continue;
+
                 CheckBoundingHit2(object1, FieldObjectList[i]);
             }
         }
@@ -70,7 +72,7 @@ namespace ProgramingGameXNA.Game
             var isHit = box1.Intersects(box2);
             if (isHit == false) return;
 
-            var intersects = GetIntersectsBox(box1, box2);
+            var intersects = Utility.GetIntersectsBox(box1, box2);
             var signed = object2.Position - object1.Position;
             signed.Normalize();
             var size = (intersects.Max - intersects.Min);
@@ -89,7 +91,7 @@ namespace ProgramingGameXNA.Game
             var isHit = box1.Intersects(box2);
             if (isHit == false) return;
 
-            var intersects = GetIntersectsBox(box1, box2);
+            var intersects = Utility.GetIntersectsBox(box1, box2);
             var center = intersects.Center();
             var size = intersects.Size();
             var center1 = box1.Center();
@@ -119,17 +121,15 @@ namespace ProgramingGameXNA.Game
             var velocity1 = vector1 * ((size / 2) + new Vector2(0.1f, 0.1f));
             var velocity2 = vector2 * ((size / 2) + new Vector2(0.1f, 0.1f));
 
-            if (float.IsNaN(vector1.X) || float.IsNaN(vector1.Y))
-            {
-                var a = 0;
-            }
-            if (float.IsNaN(vector2.X) || float.IsNaN(vector2.Y))
-            {
-                int b = 0;
-            }
+            var statement1 = object1 as CodeStatement;
+            var statement2 = object2 as CodeStatement;
 
-            object1.Position = object1.Position + velocity1;
-            object2.Position = object2.Position + velocity2;
+            if (statement1 == null) object1.Position = object1.Position + velocity1;
+            else statement1.OffsetPosition(velocity1);
+
+            if (statement2 == null) object2.Position = object2.Position + velocity2;
+            else statement2.OffsetPosition(velocity2);
+            
             if (isHitTable[object1] == false)
             {
                 isHitTable[object1] = true;
@@ -142,31 +142,5 @@ namespace ProgramingGameXNA.Game
             }
         }
 
-        private BoundingBox GetIntersectsBox(BoundingBox box1, BoundingBox box2)
-        {
-            var box = new BoundingBox();
-            box.Min.X = (float)Math.Max(box1.Min.X, box2.Min.X);
-            box.Min.Y = (float)Math.Max(box1.Min.Y, box2.Min.Y);
-            box.Max.X = (float)Math.Min(box1.Max.X, box2.Max.X);
-            box.Max.Y = (float)Math.Min(box1.Max.Y, box2.Max.Y);
-            return box;
-        }
-    }
-
-    public static class Utils
-    {
-        public static Vector2 Center(this BoundingBox self)
-        {
-            var center3 = self.Min + (self.Max - self.Min) / 2;
-            var center2 = new Vector2(center3.X, center3.Y);
-            return center2;
-        }
-
-        public static Vector2 Size(this BoundingBox self)
-        {
-            var size2 = (self.Max - self.Min);
-            var size3 = new Vector2(size2.X, size2.Y);
-            return size3;
-        }
     }
 }

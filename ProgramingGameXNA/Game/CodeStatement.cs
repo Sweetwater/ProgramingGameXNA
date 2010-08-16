@@ -18,12 +18,20 @@ namespace ProgramingGameXNA.Game
             }
         }
 
+        protected CodeStatement prev = Nop;
+        public CodeStatement Prev
+        {
+            get { return prev; }
+            set { prev = value;}
+        }
+
         protected CodeStatement next = Nop;
         public CodeStatement Next
         {
             get { return next; }
             set {
                 next = value;
+                next.prev = this;
                 UpdateIsHUD();
                 UpdatePosition();
             }
@@ -31,7 +39,20 @@ namespace ProgramingGameXNA.Game
 
         public override void UpdatePosition()
         {
-            next.Position = new Vector2(0, 29) + position;
+            var nextSize = next.BoundingBox.Size();
+            next.Position = new Vector2(-64, 13) + position + (nextSize / 2);
+        }
+
+        public void OffsetPosition(Vector2 offset)
+        {
+            if (this.prev == Nop)
+            {
+                Position += offset;
+            }
+            else
+            {
+                prev.OffsetPosition(offset);
+            }
         }
 
         public virtual void UpdateIsHUD()
@@ -42,6 +63,15 @@ namespace ProgramingGameXNA.Game
         public virtual void Execute()
         {
             next.Execute();
+        }
+
+        public override bool IsCollisionTarget(GameObject target)
+        {
+            if (target == next || target == prev)
+            {
+                return false;
+            }
+            return true;
         }
 
         private class CodeNop : CodeStatement
@@ -76,6 +106,7 @@ namespace ProgramingGameXNA.Game
             get { return left; }
             set {
                 left = value;
+                left.Parent = this;
                 UpdateIsHUD();
                 UpdatePosition();
             }
@@ -86,6 +117,7 @@ namespace ProgramingGameXNA.Game
             set
             {
                 right = value;
+                right.Parent = this;
                 UpdateIsHUD();
                 UpdatePosition();
             }
@@ -104,8 +136,10 @@ namespace ProgramingGameXNA.Game
 
         public override void  UpdatePosition()
         {
-            Left.Position = new Vector2(33, 11) + position;
-            Right.Position = new Vector2(88, 11) + position;
+            var leftSize = Left.BoundingBox.Size();
+            var rightSize = Right.BoundingBox.Size();
+            Left.Position = new Vector2(-31, -5) + position + (leftSize / 2);
+            Right.Position = new Vector2(24, -5) + position + (rightSize / 2);
             base.UpdatePosition();
         }
 
@@ -135,6 +169,15 @@ namespace ProgramingGameXNA.Game
             exe();
 
             next.Execute();
+        }
+
+        public override bool IsCollisionTarget(GameObject target)
+        {
+            if (left == target || right == target)
+            {
+                return false;
+            }
+            return base.IsCollisionTarget(target);
         }
 
         #region Image

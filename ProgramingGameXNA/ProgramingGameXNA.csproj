@@ -93,6 +93,8 @@
     <Compile Include="Game\GameObject.cs" />
     <Compile Include="Game\MyProgram.cs" />
     <Compile Include="Game\Player.cs" />
+    <Compile Include="Game\SnapManager.cs" />
+    <Compile Include="Game\Utility.cs" />
     <Compile Include="Graphics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />

@@ -34,6 +34,7 @@ namespace ProgramingGameXNA
         public List<GameObject> FieldCodeList { get; private set; }
 
         public CollisionManager CollisionManager { get; private set; }
+        public SnapManager SnapManager { get; private set; }
 
         public Random random { get; private set; }
 
@@ -114,12 +115,7 @@ namespace ProgramingGameXNA
             var posY = new CodePosition(CodePosition.PositionType.Y);
             var sp5 = new CodeSpeed(CodeSpeed.SpeedType.Speed05);
             var sub = new CodeCAO(CodeCAO.CAOType.Sub);
-            sub.Left = posY;
-            sub.Right = sp5;
             var upKey = new CodeEventTrigger(CodeEventTrigger.EventType.UpKey);
-            upKey.Next = sub;
-
-            MyProgram.Add(upKey);
 
             this.Components.Add(upKey);
             this.Components.Add(posY);
@@ -129,12 +125,7 @@ namespace ProgramingGameXNA
             var posX = new CodePosition(CodePosition.PositionType.X);
             var sp5_2 = new CodeSpeed(CodeSpeed.SpeedType.Speed05);
             var add = new CodeCAO(CodeCAO.CAOType.Add);
-            add.Left = posX;
-            add.Right = sp5_2;
             var rightKey = new CodeEventTrigger(CodeEventTrigger.EventType.RightKey);
-            rightKey.Next = add;
-
-            MyProgram.Add(rightKey);
 
             this.Components.Add(rightKey);
             this.Components.Add(posX);
@@ -164,6 +155,9 @@ namespace ProgramingGameXNA
             factoryTable[9] = () => new CodeSpeed(CodeSpeed.SpeedType.Speed05);
             factoryTable[10] = () => new CodeSpeed(CodeSpeed.SpeedType.Speed10);
 
+            var statementList = new List<CodeStatement>();
+            var variableList = new List<CodeVariable>();
+
             for (int i = 0; i < 20; i++)
             {
                 int type = random.Next(factoryTable.Count);
@@ -171,7 +165,15 @@ namespace ProgramingGameXNA
                 code.Position = GetRandomPosition();
                 this.FieldCodeList.Add(code);
                 this.Components.Add(code);
+
+                if (type < 6) statementList.Add((CodeStatement)code);
+                else variableList.Add((CodeVariable)code);
             }
+
+            this.SnapManager = new SnapManager(this);
+            SnapManager.StatementList = statementList;
+            SnapManager.VariableList = variableList;
+            this.Components.Add(SnapManager);
 
             CollisionManager = new CollisionManager();
             CollisionManager.Field = Field;
@@ -185,6 +187,19 @@ namespace ProgramingGameXNA
 			{
 			    Components[i].Initialize();
 			}
+
+            sub.Left = posY;
+            sub.Right = sp5;
+            upKey.Next = sub;
+            MyProgram.Add(upKey);
+
+            add.Left = posX;
+            add.Right = sp5_2;
+            rightKey.Next = add;
+            MyProgram.Add(rightKey);
+
+            Player.MyProgram = MyProgram;
+            Player.StatementList = statementList;
         }
 
         private Vector2 GetRandomPosition()
@@ -250,13 +265,13 @@ namespace ProgramingGameXNA
 //            myCode.Execute();
 
 
-            var speed = 2;
-            var position = Player.Position;
-            if (keyboardState.IsKeyDown(Keys.Left)) position.X -= speed;
-            if (keyboardState.IsKeyDown(Keys.Right)) position.X += speed;
-            if (keyboardState.IsKeyDown(Keys.Up)) position.Y -= speed;
-            if (keyboardState.IsKeyDown(Keys.Down)) position.Y += speed;
-            Player.Position = position;
+            //var speed = 2;
+            //var position = Player.Position;
+            //if (keyboardState.IsKeyDown(Keys.Left)) position.X -= speed;
+            //if (keyboardState.IsKeyDown(Keys.Right)) position.X += speed;
+            //if (keyboardState.IsKeyDown(Keys.Up)) position.Y -= speed;
+            //if (keyboardState.IsKeyDown(Keys.Down)) position.Y += speed;
+            //Player.Position = position;
 
             base.Update(gameTime);
         }
