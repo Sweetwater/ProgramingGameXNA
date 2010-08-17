@@ -30,7 +30,8 @@ namespace ProgramingGameXNA
         public Camera Camera { get; private set; }
 
         public Player Player { get; private set; }
-        public MyProgram MyProgram { get; private set; }
+        public MyProgram MyProgram1 { get; private set; }
+        public MyProgram MyProgram2 { get; private set; }
         public List<GameObject> FieldCodeList { get; private set; }
 
         public CollisionManager CollisionManager { get; private set; }
@@ -108,34 +109,58 @@ namespace ProgramingGameXNA
             Field = new Field();
             this.Components.Add(Field);
 
-            MyProgram = new MyProgram();
-            MyProgram.Position = new Vector2(10, 20);
-            this.Components.Add(MyProgram);
+            MyProgram1 = new MyProgram(Color.MediumSeaGreen);
+            MyProgram1.Position = new Vector2(10, 20);
+            this.Components.Add(MyProgram1);
 
-            var posY = new CodePosition(CodePosition.PositionType.Y);
-            var sp5 = new CodeSpeed(CodeSpeed.SpeedType.Speed05);
-            var sub = new CodeCAO(CodeCAO.CAOType.Sub);
-            var upKey = new CodeEventTrigger(CodeEventTrigger.EventType.UpKey);
+            MyProgram2 = new MyProgram(Color.Red);
+            MyProgram2.Position = new Vector2(10, 200);
+            this.Components.Add(MyProgram2);
 
-            this.Components.Add(upKey);
-            this.Components.Add(posY);
-            this.Components.Add(sp5);
-            this.Components.Add(sub);
+            var posX1 = new CodePosition(CodePosition.PositionType.X);
+            var posX2 = new CodePosition(CodePosition.PositionType.X);
+            var posY3 = new CodePosition(CodePosition.PositionType.Y);
+            var posY4 = new CodePosition(CodePosition.PositionType.Y);
 
-            var posX = new CodePosition(CodePosition.PositionType.X);
-            var sp5_2 = new CodeSpeed(CodeSpeed.SpeedType.Speed05);
-            var add = new CodeCAO(CodeCAO.CAOType.Add);
-            var rightKey = new CodeEventTrigger(CodeEventTrigger.EventType.RightKey);
+            var sp1_1 = new CodeSpeed(CodeSpeed.SpeedType.Speed05);
+            var sp1_2 = new CodeSpeed(CodeSpeed.SpeedType.Speed01);
+            var sp1_3 = new CodeSpeed(CodeSpeed.SpeedType.Speed05);
+            var sp1_4 = new CodeSpeed(CodeSpeed.SpeedType.Speed05);
 
-            this.Components.Add(rightKey);
-            this.Components.Add(posX);
-            this.Components.Add(sp5_2);
-            this.Components.Add(add);
+            var sub1 = new CodeCAO(CodeCAO.CAOType.Sub);
+            var add2 = new CodeCAO(CodeCAO.CAOType.Add);
+            var sub3 = new CodeCAO(CodeCAO.CAOType.Sub);
+            var add4 = new CodeCAO(CodeCAO.CAOType.Add);
+
+            var left = new CodeEventTrigger(CodeEventTrigger.EventType.LeftKey);
+            var right = new CodeEventTrigger(CodeEventTrigger.EventType.RightKey);
+            var up = new CodeEventTrigger(CodeEventTrigger.EventType.UpKey);
+            var down = new CodeEventTrigger(CodeEventTrigger.EventType.DownKey);
+
+            this.Components.Add(posX1);
+            this.Components.Add(posX2);
+            this.Components.Add(posY3);
+            this.Components.Add(posY4);
+
+            this.Components.Add(sp1_1);
+            this.Components.Add(sp1_2);
+            this.Components.Add(sp1_3);
+            this.Components.Add(sp1_4);
+
+            this.Components.Add(sub1);
+            this.Components.Add(add2);
+            this.Components.Add(sub3);
+            this.Components.Add(add4);
+
+            this.Components.Add(left);
+            this.Components.Add(right);
+            this.Components.Add(up);
+            this.Components.Add(down);
 
             this.FieldCodeList = new List<GameObject>();
 
             Player = new Player();
-            Player.Position = new Vector2(320, 240);
+            Player.Position = new Vector2(0, 0);
             this.Components.Add(Player);
             this.FieldCodeList.Add(Player);
 
@@ -158,9 +183,9 @@ namespace ProgramingGameXNA
             var statementList = new List<CodeStatement>();
             var variableList = new List<CodeVariable>();
 
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 10; i++)
             {
-                int type = random.Next(factoryTable.Count);
+                int type = i;// random.Next(factoryTable.Count);
                 var code = factoryTable[type]();
                 code.Position = GetRandomPosition();
                 this.FieldCodeList.Add(code);
@@ -188,25 +213,40 @@ namespace ProgramingGameXNA
 			    Components[i].Initialize();
 			}
 
-            sub.Left = posY;
-            sub.Right = sp5;
-            upKey.Next = sub;
-            MyProgram.Add(upKey);
+            sub1.Left = posX1;
+            sub1.Right = sp1_1;
+            left.Next = sub1;
+            MyProgram1.Add(left);
 
-            add.Left = posX;
-            add.Right = sp5_2;
-            rightKey.Next = add;
-            MyProgram.Add(rightKey);
+            add2.Left = posX2;
+            add2.Right = sp1_2;
+            right.Next = add2;
+            MyProgram2.Add(right);
 
-            Player.MyProgram = MyProgram;
+            sub3.Left = posY3;
+            sub3.Right = sp1_3;
+            up.Next = sub3;
+            MyProgram1.Add(up);
+
+            add4.Left = posY4;
+            add4.Right = sp1_4;
+            down.Next = add4;
+            MyProgram1.Add(down);
+
+            Player.MyProgram = MyProgram2;
             Player.StatementList = statementList;
         }
 
         private Vector2 GetRandomPosition()
         {
-            var x = random.Next(640);
-            var y = random.Next(480);
+            var x = GetRandom(Field.Width * 2 / 3);
+            var y = GetRandom(Field.Height * 2 / 3);
             return new Vector2(x, y);
+        }
+
+        private float GetRandom(float range)
+        {
+            return (float)(random.NextDouble() * range) - (range / 2);
         }
 
         private void CreatePresetCode(CodeFactory factory)

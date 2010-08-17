@@ -59,7 +59,7 @@ namespace ProgramingGameXNA.Game
                 var stateBox = statement.BoundingBox;
                 if (impBox.Intersects(stateBox) == false) continue;
 
-                MyProgram.Add(statement);
+                MyProgram.Replace(statement);
             }
         }
     }

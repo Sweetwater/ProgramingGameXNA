@@ -20,11 +20,11 @@ namespace ProgramingGameXNA.Game
 
         public override void Update(GameTime gameTime)
         {
-            CheckFieldLimit(Player);
+            CheckFieldPlayerLimit(Player);
             for (int i = 0; i < FieldObjectList.Count; i++)
 			{
                 var gameObject = FieldObjectList[i];
-//                CheckFieldLimit(gameObject);
+                CheckFieldCodeLimit(gameObject);
 			}
 
             isHitTable = new Dictionary<GameObject, bool>();
@@ -36,6 +36,7 @@ namespace ProgramingGameXNA.Game
             count = 0;
             for (int i = 0; i < FieldObjectList.Count; i++)
             {
+                if (FieldObjectList[i].Enable == false) continue;
                 CheckBoundingAll(FieldObjectList[i]); 
             }
             base.Update(gameTime);
@@ -44,13 +45,32 @@ namespace ProgramingGameXNA.Game
         }
         int count;
 
-        private void CheckFieldLimit(GameObject gameObject)
+        private void CheckFieldPlayerLimit(Player player)
         {
+            var position = player.Position;
+            var bounding = player.BoundingBox;
+            if (bounding.Min.X < Field.Left) position.X += (Field.Left - bounding.Min.X);
+            if (bounding.Max.X > Field.Right) position.X -= (bounding.Max.X - Field.Right);
+            if (bounding.Min.Y < Field.Top) position.Y += (Field.Top - bounding.Min.Y);
+            if (bounding.Max.Y > Field.Bottom) position.Y -= (bounding.Max.Y - Field.Bottom);
+            player.Position = position;
+        }
+
+        private void CheckFieldCodeLimit(GameObject gameObject)
+        {
+            if (gameObject is Player) return;
+            if (gameObject.Enable == false) return;
+
             var position = gameObject.Position;
-            if (position.X < Field.Left) position.X = Field.Right;
-            if (position.X > Field.Right) position.X = Field.Left;
-            if (position.Y < Field.Top) position.Y = Field.Bottom;
-            if (position.Y > Field.Bottom) position.Y = Field.Top;
+            var bounding = gameObject.BoundingBox;
+            var fieldLeft = Field.Left + Field.CodeLimit;
+            var fieldRight = Field.Right - Field.CodeLimit;
+            var fieldTop = Field.Top + Field.CodeLimit;
+            var fieldBottom = Field.Bottom - Field.CodeLimit;
+            if (bounding.Min.X < fieldLeft) position.X += (fieldLeft - bounding.Min.X);
+            if (bounding.Max.X > fieldRight) position.X -= (bounding.Max.X - fieldRight);
+            if (bounding.Min.Y < fieldTop) position.Y += (fieldTop - bounding.Min.Y);
+            if (bounding.Max.Y > fieldBottom) position.Y -= (bounding.Max.Y - fieldBottom);
             gameObject.Position = position;
         }
 
@@ -59,6 +79,7 @@ namespace ProgramingGameXNA.Game
             for (int i = 0; i < FieldObjectList.Count; i++)
             {
                 if (object1 == FieldObjectList[i]) continue;
+                if (object1.Enable == false) continue;
                 if (object1.IsCollisionTarget(FieldObjectList[i]) == false) continue;
 
                 CheckBoundingHit2(object1, FieldObjectList[i]);

@@ -93,9 +93,9 @@ namespace ProgramingGameXNA.Game
     {
         public enum SpeedType
         {
-            Speed01 = 1,
-            Speed05 = 3,
-            Speed10 = 5,
+            Speed01,
+            Speed05,
+            Speed10,
         }
         public SpeedType Type { get; private set; }
 
@@ -103,7 +103,7 @@ namespace ProgramingGameXNA.Game
         {
             get
             {
-                return (float)Type;
+                return speedTable[Type];
             }
             set
             {
@@ -111,9 +111,15 @@ namespace ProgramingGameXNA.Game
             }
         }
 
+        private Dictionary<SpeedType, float> speedTable;
+
         public CodeSpeed(SpeedType type)
         {
             this.Type = type;
+            this.speedTable = new Dictionary<SpeedType, float>();
+            speedTable[SpeedType.Speed01] = 0.4f;
+            speedTable[SpeedType.Speed05] = 3.0f;
+            speedTable[SpeedType.Speed10] = 10.0f;
         }
 
         #region Image

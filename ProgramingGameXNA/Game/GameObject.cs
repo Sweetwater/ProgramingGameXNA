@@ -24,6 +24,8 @@ namespace ProgramingGameXNA.Game
             }
         }
 
+        public bool Enable { get; set; }
+
         protected bool isHUD;
         public virtual bool IsHUD {
             get { return isHUD; }
@@ -81,6 +83,7 @@ namespace ProgramingGameXNA.Game
 
         public GameObject() : base(game)
         {
+            this.Enable = true;
         }
 
         public override void Initialize()
@@ -116,6 +119,7 @@ namespace ProgramingGameXNA.Game
         public override void Draw(GameTime gameTime)
         {
             if (Image == null) return;
+            if (Enable == false) return;
 
             if (IsHUD)
             {

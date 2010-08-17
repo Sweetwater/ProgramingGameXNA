@@ -74,6 +74,12 @@ namespace ProgramingGameXNA.Game
             return true;
         }
 
+        public virtual void RemoveGame()
+        {
+            next.RemoveGame();
+            this.Enable = false;
+        }
+
         private class CodeNop : CodeStatement
         {
             public override bool IsHUD
@@ -85,6 +91,9 @@ namespace ProgramingGameXNA.Game
             {
             }
             public override void UpdatePosition()
+            {
+            }
+            public override void RemoveGame()
             {
             }
         }
@@ -148,6 +157,13 @@ namespace ProgramingGameXNA.Game
             Left.IsHUD = IsHUD;
             Right.IsHUD = IsHUD;
             base.UpdateIsHUD();
+        }
+
+        public override void RemoveGame()
+        {
+            Left.Enable = false;
+            Right.Enable = false;
+            base.RemoveGame();
         }
 
         private void ExecuteAdd()

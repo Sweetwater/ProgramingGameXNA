@@ -10,13 +10,31 @@ namespace ProgramingGameXNA.Game
     public class MyProgram : GameObject
     {
         private List<CodeStatement> codeList = new List<CodeStatement>();
-        public MyProgram()
+        private Color frameColor;
+        public MyProgram(Color frameColor)
         {
             this.IsHUD = true;
+            this.frameColor = frameColor;
         }
 
         public void Add(CodeStatement code)
         {
+            var x = codeList.Count * (128 + 10) + 10 + 64;
+            var y = 10 + 16;
+            code.Position = position + new Vector2(x, y);
+            code.IsHUD = true;
+
+            this.codeList.Add(code);
+        }
+
+        public void Replace(CodeStatement code)
+        {
+            for (int i = 0; i < codeList.Count; i++)
+            {
+                codeList[i].RemoveGame(); ;
+            }
+            this.codeList.Clear();
+
             var x = codeList.Count * (128 + 10) + 10 + 64;
             var y = 10 + 16;
             code.Position = position + new Vector2(x, y);
@@ -42,7 +60,7 @@ namespace ProgramingGameXNA.Game
             size.X = codeList.Count * (128 + 10) + 10;
 
             graphics.FillRect2D(position, size, Color.Beige);
-            graphics.DrawRect2D(position, size, Color.MediumSeaGreen);
+            graphics.DrawRect2D(position, size, frameColor);
         }
     }
 }
